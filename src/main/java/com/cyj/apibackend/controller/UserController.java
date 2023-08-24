@@ -82,7 +82,7 @@ public class UserController {
     @PostMapping("/register")
     public BaseResponse<Long> userRegister(@RequestBody UserRegisterRequest userRegisterRequest){
         if (Objects.isNull(userRegisterRequest)){
-            log.error("user register failed, params is NULL");
+            log.error("user register failed, params error");
             ResultUtils.error(ErrorCode.PARAMS_ERROR);
         }
         String userAccount = userRegisterRequest.getUserAccount();

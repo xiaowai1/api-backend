@@ -1,24 +1,24 @@
-package com.cyj.apibackend.model.entity;
+package com.cyj.apibackend.model.dto.interfaceInfo;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
-import java.io.Serializable;
-import java.util.Date;
+import com.cyj.apibackend.common.PageRequest;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+
+import java.io.Serializable;
 
 /**
- * 接口
+ * 查询请求
+ * 用于接收前端用户输入的请求参数
+ * @author chixiaowai
  * @TableName interface_info
  */
-@TableName(value ="interface_info")
+@EqualsAndHashCode(callSuper = true)
 @Data
-public class InterfaceInfo implements Serializable {
+public class InterfaceInfoQueryRequest extends PageRequest implements Serializable {
+
     /**
-     *
+     * ID
      */
-    @TableId(type = IdType.AUTO)
     private Long id;
 
     /**
@@ -47,11 +47,6 @@ public class InterfaceInfo implements Serializable {
     private String method;
 
     /**
-     * 请求参数
-     */
-    private String requestParams;
-
-    /**
      * 请求头
      */
     private String requestHeader;
@@ -67,20 +62,9 @@ public class InterfaceInfo implements Serializable {
     private Integer status;
 
     /**
-     * 创建时间
-     */
-    private Date createTime;
-
-    /**
-     * 修改时间
-     */
-    private Date updateTime;
-
-    /**
      * 是否删除(0 - 未删除， 1- 已删除)
      */
     private Byte isDeleted;
 
-    @TableField(exist = false)
     private static final long serialVersionUID = 1L;
 }

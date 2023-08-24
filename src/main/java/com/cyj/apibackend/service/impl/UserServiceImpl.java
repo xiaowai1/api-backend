@@ -15,6 +15,7 @@ import com.cyj.apibackend.constant.RedisConstant;
 import com.cyj.apibackend.exception.BusinessException;
 import com.cyj.apibackend.model.dto.user.UserLoginRequest;
 import com.cyj.apibackend.model.entity.User;
+import com.cyj.apibackend.model.enums.UserRoleEnum;
 import com.cyj.apibackend.model.vo.LoginUserVO;
 import com.cyj.apibackend.service.UserService;
 import com.cyj.apibackend.mapper.UserMapper;
@@ -222,7 +223,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     public User getLoginUser(HttpServletRequest request) {
         String token = request.getHeader("authorization");
         // 先判断是否已登录
-//        Object userObj = request.getSession().getAttribute(USER_LOGIN_STATE);
         String tokenKey = RedisConstant.LOGIN_USER_KEY + token;
 
         Map<Object, Object> userMap = stringRedisTemplate.opsForHash().entries(tokenKey);
@@ -239,6 +239,27 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             throw new BusinessException(ErrorCode.NOT_LOGIN_ERROR);
         }
         return currentUser;
+    }
+
+    /**
+     * 是否为管理员
+     * @param user
+     * @return
+     */
+    @Override
+    public boolean isAdmin(User user) {
+        return user != null && UserRoleEnum.ADMIN.getValue().equals(user.getUserRole());
+    }
+
+    /**
+     * 是否为管理员
+     * @param request
+     * @return
+     */
+    @Override
+    public boolean isAdmin(HttpServletRequest request) {
+        User loginUser = getLoginUser(request);
+        return isAdmin(loginUser);
     }
 
     /**
