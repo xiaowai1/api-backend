@@ -2,7 +2,6 @@ package com.cyj.apibackend.controller;
 
 import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.cyj.apibackend.annotation.AuthCheck;
 import com.cyj.apibackend.common.BaseResponse;
@@ -15,7 +14,6 @@ import com.cyj.apibackend.model.dto.interfaceInfo.InterfaceInfoUpdateRequest;
 import com.cyj.apibackend.model.entity.InterfaceInfo;
 import com.cyj.apibackend.service.InterfaceInfoService;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
