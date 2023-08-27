@@ -2,12 +2,11 @@ package com.cyj.apibackend.service;
 
 import com.cyj.apibackend.common.BaseResponse;
 import com.cyj.apibackend.model.dto.user.UserLoginRequest;
-import com.cyj.apibackend.model.entity.User;
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.cyj.apibackend.model.vo.LoginUserVO;
+import com.cyj.apicommon.model.entity.User;
+import com.cyj.apicommon.model.vo.LoginUserVO;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 /**
  *

@@ -1,0 +1,39 @@
+server:
+  port: 8090
+spring:
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 127.0.0.1:8848
+    gateway:
+      routes:
+        - id: api_route
+          uri: http://localhost:8123
+          predicates:
+            - Path=/api/**
+  application:
+    name: api-gateway
+
+logging:
+  level:
+    org:
+      springframework:
+        cloud:
+          gateway: trace
+
+dubbo:
+  application:
+    name: dubbo-consumer
+  protocol:
+    name: dubbo
+    port: -1
+  registry:
+    id: dubbo-provider
+    address: nacos://127.0.0.1:8848
+  config-center:
+    address: nacos://127.0.0.1:8848
+  metadata-report:
+    address: nacos://127.0.0.1:8848
+
+
+

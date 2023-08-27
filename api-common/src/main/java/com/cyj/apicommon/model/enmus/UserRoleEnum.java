@@ -1,4 +1,4 @@
-package com.cyj.apibackend.model.enums;
+package com.cyj.apicommon.model.enmus;
 
 import org.apache.commons.lang3.ObjectUtils;
 

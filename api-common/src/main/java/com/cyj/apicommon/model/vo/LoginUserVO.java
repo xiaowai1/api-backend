@@ -1,4 +1,4 @@
-package com.cyj.apibackend.model.vo;
+package com.cyj.apicommon.model.vo;
 
 import lombok.Data;
 

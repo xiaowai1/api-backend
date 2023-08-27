@@ -2,33 +2,33 @@ server:
   port: 7529
   servlet:
     context-path: /api
-    # cookie 30 Ìì¹ıÆÚ
+    # cookie 30 å¤©è¿‡æœŸ
     session:
       cookie:
         max-age: 2592000
 spring:
   application:
     name: api-backend
-  # Ä¬ÈÏ dev »·¾³
+  # é»˜è®¤ dev ç¯å¢ƒ
   profiles:
     active: dev
-  # Ö§³Ö swagger3
+  # æ”¯æŒ swagger3
   mvc:
     pathmatch:
       matching-strategy: ant_path_matcher
-  # 30 Ìì¹ıÆÚ
+  # 30 å¤©è¿‡æœŸ
   session:
     timeout: 2592000
-    # Êı¾İ¿âÅäÖÃ
+  # æ•°æ®åº“é…ç½®
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3306/cyjapi
     username: root
     password: root
-  # ÎÄ¼şÉÏ´«
+  # æ–‡ä»¶ä¸Šä¼ 
   servlet:
     multipart:
-      # ´óĞ¡ÏŞÖÆ
+      # å¤§å°é™åˆ¶
       max-file-size: 10MB
   # redis
   redis:
@@ -40,6 +40,10 @@ spring:
         max-idle: 10
         min-idle: 1
         time-between-eviction-runs: 10s
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 127.0.0.1:8848
 mybatis-plus:
   configuration:
     map-underscore-to-camel-case: false
@@ -48,6 +52,20 @@ mybatis-plus:
     dateformat: mm:ss.SSS
   global-config:
     db-config:
-      logic-delete-field: isDelete # È«¾ÖÂß¼­É¾³ıµÄÊµÌå×Ö¶ÎÃû
-      logic-delete-value: 1 # Âß¼­ÒÑÉ¾³ıÖµ£¨Ä¬ÈÏÎª 1£©
-      logic-not-delete-value: 0 # Âß¼­Î´É¾³ıÖµ£¨Ä¬ÈÏÎª 0£©
+      logic-delete-field: isDelete # å…¨å±€é€»è¾‘åˆ é™¤çš„å®ä½“å­—æ®µå
+      logic-delete-value: 1 # é€»è¾‘å·²åˆ é™¤å€¼ï¼ˆé»˜è®¤ä¸º 1ï¼‰
+      logic-not-delete-value: 0 # é€»è¾‘æœªåˆ é™¤å€¼ï¼ˆé»˜è®¤ä¸º 0ï¼‰
+
+dubbo:
+  application:
+    name: dubbo-provider
+  protocol:
+    name: dubbo
+    port: -1
+  registry:
+    id: nacos-registry
+    address: nacos://127.0.0.1:8848
+  config-center:
+    address: nacos://127.0.0.1:8848
+  metadata-report:
+    address: nacos://127.0.0.1:8848

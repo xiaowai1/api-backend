@@ -22,30 +22,6 @@ public class NameController {
 
     @PostMapping("/getUsername")
     public String getUsernameByUser(@RequestBody User user, HttpServletRequest request){
-        // TODO 此处校验应写到网关中
-        String accessKey = request.getHeader("accessKey");
-        String nonce = request.getHeader("nonce");
-        String timestamp = request.getHeader("timestamp");
-        String body = request.getHeader("body");
-        String sign = request.getHeader("sign");
-
-        // TODO 此处的"cyj"应从数据库中查询
-        if (!"cyj".equals(accessKey)) {
-            throw new RuntimeException("无权限");
-        }
-        if (Long.parseLong(nonce) > 10000) {
-            throw new RuntimeException("无权限");
-        }
-        long currentTime = System.currentTimeMillis() / 1000;
-        Long FIVE_MINUTES = 60 * 5L;
-        if ((currentTime - Long.parseLong(timestamp)) > FIVE_MINUTES) {
-            throw new RuntimeException("无权限");
-        }
-        // TODO secretKey是从数据库中查询出来的
-        String serveSign = SignUtil.getSign(body, "nidemei");
-        if (!serveSign.equals(sign)) {
-            throw new RuntimeException("无权限");
-        }
         return "用户名是" + user.getUsername();
     }
 }

@@ -1,12 +1,10 @@
-package com.cyj.apibackend.model.entity;
+package com.cyj.apicommon.model.entity;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.annotation.*;
+import lombok.Data;
+
 import java.io.Serializable;
 import java.util.Date;
-import lombok.Data;
 
 /**
  * 接口
@@ -79,6 +77,7 @@ public class InterfaceInfo implements Serializable {
     /**
      * 是否删除(0 - 未删除， 1- 已删除)
      */
+    @TableLogic
     private Byte isDeleted;
 
     @TableField(exist = false)

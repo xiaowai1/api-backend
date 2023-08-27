@@ -3,11 +3,12 @@ package com.cyj.apibackend.service;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.cyj.apibackend.common.BaseResponse;
 import com.cyj.apibackend.common.DeleteRequest;
+import com.cyj.apibackend.common.IdRequest;
 import com.cyj.apibackend.model.dto.interfaceInfo.InterfaceInfoAddRequest;
 import com.cyj.apibackend.model.dto.interfaceInfo.InterfaceInfoQueryRequest;
 import com.cyj.apibackend.model.dto.interfaceInfo.InterfaceInfoUpdateRequest;
-import com.cyj.apibackend.model.entity.InterfaceInfo;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.cyj.apicommon.model.entity.InterfaceInfo;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
@@ -48,4 +49,18 @@ public interface InterfaceInfoService extends IService<InterfaceInfo> {
      * @return
      */
     BaseResponse<List<InterfaceInfo>> listInterfaceInfoByPage(Page<InterfaceInfo> interfaceInfoPage, InterfaceInfoQueryRequest interfaceInfoQueryRequest);
+
+    /**
+     * 发布接口
+     * @param idRequest
+     * @return
+     */
+    BaseResponse onlineInterfaceInfo(IdRequest idRequest);
+
+    /**
+     * 下线接口
+     * @param idRequest
+     * @return
+     */
+    BaseResponse offlineInterfaceInfo(IdRequest idRequest);
 }

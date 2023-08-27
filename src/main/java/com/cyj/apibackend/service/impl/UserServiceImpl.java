@@ -14,12 +14,12 @@ import com.cyj.apibackend.common.ResultUtils;
 import com.cyj.apibackend.constant.RedisConstant;
 import com.cyj.apibackend.exception.BusinessException;
 import com.cyj.apibackend.model.dto.user.UserLoginRequest;
-import com.cyj.apibackend.model.entity.User;
-import com.cyj.apibackend.model.enums.UserRoleEnum;
-import com.cyj.apibackend.model.vo.LoginUserVO;
 import com.cyj.apibackend.service.UserService;
 import com.cyj.apibackend.mapper.UserMapper;
 import com.cyj.apibackend.utils.RegexUtil;
+import com.cyj.apicommon.model.enmus.UserRoleEnum;
+import com.cyj.apicommon.model.entity.User;
+import com.cyj.apicommon.model.vo.LoginUserVO;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
@@ -229,15 +229,15 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         log.info("userMap:{}", userMap);
         User currentUser = BeanUtil.fillBeanWithMap(userMap, new User(), false);
         log.info("currentUser:{}", currentUser);
-        if (currentUser == null || currentUser.getId() == null) {
+        if (Objects.isNull(currentUser) || currentUser.getId() == null) {
             throw new BusinessException(ErrorCode.NOT_LOGIN_ERROR);
         }
-        // 从数据库查询（追求性能的话可以注释，直接走缓存）
-        long userId = currentUser.getId();
-        currentUser = this.getById(userId);
-        if (currentUser == null) {
-            throw new BusinessException(ErrorCode.NOT_LOGIN_ERROR);
-        }
+//        // 从数据库查询（追求性能的话可以注释，直接走缓存）
+//        long userId = currentUser.getId();
+//        currentUser = this.getById(userId);
+//        if (currentUser == null) {
+//            throw new BusinessException(ErrorCode.NOT_LOGIN_ERROR);
+//        }
         return currentUser;
     }
 

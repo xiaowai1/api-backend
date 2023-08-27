@@ -23,7 +23,7 @@ public class ApiClient {
     private String accessKey;
     private String secretKey;
     //网关端口
-    private static final String GATEWAY_HOST = "http://localhost:8123";
+    private static final String GATEWAY_HOST = "http://localhost:8090";
 
     public ApiClient(String accessKey, String secretKey) {
         this.accessKey = accessKey;

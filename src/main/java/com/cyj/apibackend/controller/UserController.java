@@ -5,8 +5,9 @@ import com.cyj.apibackend.common.ErrorCode;
 import com.cyj.apibackend.common.ResultUtils;
 import com.cyj.apibackend.model.dto.user.UserLoginRequest;
 import com.cyj.apibackend.model.dto.user.UserRegisterRequest;
-import com.cyj.apibackend.model.vo.LoginUserVO;
 import com.cyj.apibackend.service.UserService;
+import com.cyj.apicommon.model.entity.User;
+import com.cyj.apicommon.model.vo.LoginUserVO;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.*;
@@ -93,5 +94,17 @@ public class UserController {
             ResultUtils.error(ErrorCode.PARAMS_ERROR);
         }
         return userService.register(userAccount, userPassword, checkPassword);
+    }
+
+    /**
+     * 获取当前登录用户
+     *
+     * @param request
+     * @return
+     */
+    @GetMapping("/get/login")
+    public BaseResponse<LoginUserVO> getLoginUser(HttpServletRequest request) {
+        User user = userService.getLoginUser(request);
+        return ResultUtils.success(userService.getLoginUserVO(user));
     }
 }

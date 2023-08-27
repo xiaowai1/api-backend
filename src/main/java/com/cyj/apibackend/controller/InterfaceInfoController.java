@@ -4,15 +4,13 @@ import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.cyj.apibackend.annotation.AuthCheck;
-import com.cyj.apibackend.common.BaseResponse;
-import com.cyj.apibackend.common.DeleteRequest;
-import com.cyj.apibackend.common.ErrorCode;
-import com.cyj.apibackend.common.ResultUtils;
+import com.cyj.apibackend.common.*;
+import com.cyj.apibackend.constant.UserConstant;
 import com.cyj.apibackend.model.dto.interfaceInfo.InterfaceInfoAddRequest;
 import com.cyj.apibackend.model.dto.interfaceInfo.InterfaceInfoQueryRequest;
 import com.cyj.apibackend.model.dto.interfaceInfo.InterfaceInfoUpdateRequest;
-import com.cyj.apibackend.model.entity.InterfaceInfo;
 import com.cyj.apibackend.service.InterfaceInfoService;
+import com.cyj.apicommon.model.entity.InterfaceInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
@@ -83,12 +81,27 @@ public class InterfaceInfoController {
     }
 
     /**
+     * 根据接口id获取接口信息
+     * @param id
+     * @return
+     */
+    @GetMapping("/get")
+    public BaseResponse getInterfaceInfoById(long id){
+        if (id <= 0) {
+            log.error("get interfaceInfo failed, params error");
+            return ResultUtils.error(ErrorCode.PARAMS_ERROR);
+        }
+        InterfaceInfo interfaceInfo = interfaceInfoService.getById(id);
+        return ResultUtils.success(interfaceInfo);
+    }
+
+    /**
      * 获取接口列表 (仅管理员可用)
      * @param interfaceInfoQueryRequest
      * @return
      */
     @GetMapping("/list")
-    @AuthCheck(mustRole = "admin")
+    @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
     public BaseResponse<List<InterfaceInfo>> listInterfaceInfo(InterfaceInfoQueryRequest interfaceInfoQueryRequest){
         InterfaceInfo interfaceInfoQuery = new InterfaceInfo();
         if (interfaceInfoQueryRequest != null) {
@@ -117,4 +130,33 @@ public class InterfaceInfoController {
         return interfaceInfoService.listInterfaceInfoByPage(interfaceInfoPage, interfaceInfoQueryRequest);
     }
 
+    /**
+     * 发布接口 （仅管理员可用）
+     * @param idRequest
+     * @return
+     */
+    @PostMapping("/online")
+    @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
+    public BaseResponse onlineInterfaceInfo(@RequestBody IdRequest idRequest){
+        if (idRequest == null || idRequest.getId() <= 0) {
+            log.error("online interfaceInfo failed, params error");
+            return ResultUtils.error(ErrorCode.PARAMS_ERROR);
+        }
+        return interfaceInfoService.onlineInterfaceInfo(idRequest);
+    }
+
+    /**
+     * 下线接口（仅管理员可用）
+     * @param idRequest
+     * @return
+     */
+    @PostMapping("/offline")
+    @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
+    public BaseResponse offlineInterfaceInfo(@RequestBody IdRequest idRequest){
+        if (idRequest == null || idRequest.getId() <= 0) {
+            log.error("offline interfaceInfo failed, params error");
+            return ResultUtils.error(ErrorCode.PARAMS_ERROR);
+        }
+        return interfaceInfoService.offlineInterfaceInfo(idRequest);
+    }
 }
