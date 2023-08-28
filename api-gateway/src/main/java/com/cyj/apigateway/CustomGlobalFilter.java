@@ -54,6 +54,7 @@ public class CustomGlobalFilter implements GlobalFilter, Ordered {
     //黑名单
     private static final List<String> IP_BLACK_LIST = Arrays.asList("");
 
+    //接口地址
     private static final String INTERFACE_HOST = "http://127.0.0.1:8123";
 
     /**
@@ -122,8 +123,10 @@ public class CustomGlobalFilter implements GlobalFilter, Ordered {
         if (Objects.isNull(interfaceInfo)){
             return handlerNoAuth(response);
         }
+        // TODO 判断该用户是否还有该接口的调用次数
         // (远程)判断该用户针对该接口是否还有调用次数
         //5、请求转发，调用模拟接口,响应日志
+        log.info("执行到这了");
         return handlerResponseLog(exchange, chain, interfaceInfo.getId(), invokeUser.getId());
     }
 
@@ -157,6 +160,7 @@ public class CustomGlobalFilter implements GlobalFilter, Ordered {
                                     fluxBody.map(dataBuffer -> {
                                         // 6、调用成功，接口调用次数+1
                                         try {
+                                            log.info("接口调用次数+1");
                                             innerUserInterfaceInfoService.invokeCount(interfaceInfoId, userId);
                                         } catch (Exception e) {
                                             log.error("invokeCount error", e);
@@ -193,7 +197,7 @@ public class CustomGlobalFilter implements GlobalFilter, Ordered {
 
     @Override
     public int getOrder() {
-        return 0;
+        return -1;
     }
 
     /**

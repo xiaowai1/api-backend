@@ -6,14 +6,20 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.cyj.apibackend.annotation.AuthCheck;
 import com.cyj.apibackend.common.*;
 import com.cyj.apibackend.constant.UserConstant;
+import com.cyj.apibackend.exception.BusinessException;
 import com.cyj.apibackend.model.dto.interfaceInfo.InterfaceInfoAddRequest;
+import com.cyj.apibackend.model.dto.interfaceInfo.InterfaceInfoInvokeRequest;
 import com.cyj.apibackend.model.dto.interfaceInfo.InterfaceInfoQueryRequest;
 import com.cyj.apibackend.model.dto.interfaceInfo.InterfaceInfoUpdateRequest;
 import com.cyj.apibackend.service.InterfaceInfoService;
+import com.cyj.apibackend.service.UserService;
+import com.cyj.apicommon.model.enmus.InterfaceInfoStatusEnum;
 import com.cyj.apicommon.model.entity.InterfaceInfo;
+import com.cyj.apicommon.model.entity.User;
+import com.google.gson.Gson;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
-
+import com.cyj.apiclientsdk.client.ApiClient;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
@@ -33,6 +39,9 @@ public class InterfaceInfoController {
 
     @Resource
     private InterfaceInfoService interfaceInfoService;
+
+    @Resource
+    private UserService userService;
 
     /**
      * 添加接口
@@ -119,15 +128,12 @@ public class InterfaceInfoController {
      * @return
      */
     @GetMapping("/list/page")
-    public BaseResponse<List<InterfaceInfo>> listInterfaceInfoByPage(InterfaceInfoQueryRequest interfaceInfoQueryRequest){
+    public BaseResponse<Page<InterfaceInfo>> listInterfaceInfoByPage(InterfaceInfoQueryRequest interfaceInfoQueryRequest){
         if (interfaceInfoQueryRequest == null) {
             log.error("pageList interfaceInfo failed, params error");
             return ResultUtils.error(ErrorCode.PARAMS_ERROR);
         }
-        long current = interfaceInfoQueryRequest.getCurrent();
-        long pageSize = interfaceInfoQueryRequest.getPageSize();
-        Page<InterfaceInfo> interfaceInfoPage = new Page<>(current, pageSize);
-        return interfaceInfoService.listInterfaceInfoByPage(interfaceInfoPage, interfaceInfoQueryRequest);
+        return interfaceInfoService.listInterfaceInfoByPage(interfaceInfoQueryRequest);
     }
 
     /**
@@ -158,5 +164,39 @@ public class InterfaceInfoController {
             return ResultUtils.error(ErrorCode.PARAMS_ERROR);
         }
         return interfaceInfoService.offlineInterfaceInfo(idRequest);
+    }
+
+    /**
+     * 测试调用
+     * @param interfaceInfoInvokeRequest
+     * @param request
+     * @return
+     */
+    @PostMapping("/invoke")
+    public BaseResponse<Object> invokeInterfaceInfo(@RequestBody InterfaceInfoInvokeRequest interfaceInfoInvokeRequest, HttpServletRequest request) {
+        if (interfaceInfoInvokeRequest == null || interfaceInfoInvokeRequest.getId() <= 0) {
+            log.error("invoke interfaceInfo failed, params error");
+            return ResultUtils.error(ErrorCode.PARAMS_ERROR);
+        }
+        long id = interfaceInfoInvokeRequest.getId();
+        String userRequestParams = interfaceInfoInvokeRequest.getUserRequestParams();
+        // 判断接口是否存在
+        InterfaceInfo oldInterfaceInfo = interfaceInfoService.getById(id);
+        if (oldInterfaceInfo == null) {
+            log.error("该接口不存在");
+            return ResultUtils.error(ErrorCode.NOT_FOUND_ERROR);
+        }
+        if (oldInterfaceInfo.getStatus() == InterfaceInfoStatusEnum.OFFLINE.getValue()) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "接口已关闭");
+        }
+        User loginUser = userService.getLoginUser(request);
+        String accessKey = loginUser.getAccessKey();
+        String secretKey = loginUser.getSecretKey();
+        ApiClient tempClient = new ApiClient(accessKey, secretKey);
+        Gson gson = new Gson();
+        com.cyj.apiclientsdk.model.User user = gson.fromJson(userRequestParams, com.cyj.apiclientsdk.model.User.class);
+        String username = tempClient.getUserName(user);
+
+        return ResultUtils.success(username);
     }
 }

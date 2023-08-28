@@ -7,6 +7,7 @@ import cn.hutool.core.lang.UUID;
 import cn.hutool.core.util.RandomUtil;
 import cn.hutool.crypto.digest.DigestUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.cyj.apibackend.common.BaseResponse;
 import com.cyj.apibackend.common.ErrorCode;
@@ -20,6 +21,7 @@ import com.cyj.apibackend.utils.RegexUtil;
 import com.cyj.apicommon.model.enmus.UserRoleEnum;
 import com.cyj.apicommon.model.entity.User;
 import com.cyj.apicommon.model.vo.LoginUserVO;
+import com.cyj.apicommon.model.vo.UserVO;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
@@ -28,11 +30,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 
 /**
@@ -94,6 +94,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             return ResultUtils.error(ErrorCode.PARAMS_ERROR, "密码错误");
         }
         createTokenAndSaveRedis(user);
+        log.info("user:{}", user);
         return ResultUtils.success(this.getLoginUserVO(user));
     }
 
@@ -109,6 +110,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         }
         LoginUserVO loginUserVO = new LoginUserVO();
         BeanUtils.copyProperties(user, loginUserVO);
+        log.info("loginUserVO:{}", loginUserVO);
         return loginUserVO;
     }
 
@@ -221,9 +223,10 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
      */
     @Override
     public User getLoginUser(HttpServletRequest request) {
-        String token = request.getHeader("authorization");
+//        String token = request.getHeader("authorization");
         // 先判断是否已登录
-        String tokenKey = RedisConstant.LOGIN_USER_KEY + token;
+//        String tokenKey = RedisConstant.LOGIN_USER_KEY + token;
+        String tokenKey = RedisConstant.LOGIN_USER_KEY;
 
         Map<Object, Object> userMap = stringRedisTemplate.opsForHash().entries(tokenKey);
         log.info("userMap:{}", userMap);
@@ -262,6 +265,24 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         return isAdmin(loginUser);
     }
 
+    @Override
+    public UserVO getUserVO(User user) {
+        if (user == null) {
+            return null;
+        }
+        UserVO userVO = new UserVO();
+        BeanUtils.copyProperties(user, userVO);
+        return userVO;
+    }
+
+    @Override
+    public List<UserVO> getUserVO(List<User> userList) {
+        if (CollectionUtils.isEmpty(userList)) {
+            return new ArrayList<>();
+        }
+        return userList.stream().map(this::getUserVO).collect(Collectors.toList());
+    }
+
     /**
      * 手机号登录时自动创建用户
      * @param phone
@@ -298,10 +319,10 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
      */
     public void createTokenAndSaveRedis(User user){
         // 生成token令牌
-        String token = UUID.randomUUID().toString(true);
-        LoginUserVO loginUserVO = BeanUtil.copyProperties(user, LoginUserVO.class);
+//        String token = UUID.randomUUID().toString(true);
+//        LoginUserVO loginUserVO = BeanUtil.copyProperties(user, LoginUserVO.class);
         //存入redis
-        Map<String, Object> userMap = BeanUtil.beanToMap(loginUserVO, new HashMap<>(),
+        Map<String, Object> userMap = BeanUtil.beanToMap(user, new HashMap<>(),
                 CopyOptions.create()
                         .setIgnoreNullValue(true)
                         .setFieldValueEditor((fieldName, fieldValue) -> {
@@ -315,7 +336,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
                             return fieldValue.toString();
                         }));
 
-        String tokenKey = RedisConstant.LOGIN_USER_KEY + token;
+        String tokenKey = RedisConstant.LOGIN_USER_KEY;
         stringRedisTemplate.opsForHash().putAll(tokenKey, userMap);
         stringRedisTemplate.expire(tokenKey, RedisConstant.LOGIN_USER_TTL, TimeUnit.MINUTES);
     }

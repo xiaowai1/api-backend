@@ -45,10 +45,9 @@ public interface InterfaceInfoService extends IService<InterfaceInfo> {
     /**
      * 分页获取接口信息列表
      * @param interfaceInfoQueryRequest
-     * @param interfaceInfoPage
      * @return
      */
-    BaseResponse<List<InterfaceInfo>> listInterfaceInfoByPage(Page<InterfaceInfo> interfaceInfoPage, InterfaceInfoQueryRequest interfaceInfoQueryRequest);
+    BaseResponse<Page<InterfaceInfo>> listInterfaceInfoByPage(InterfaceInfoQueryRequest interfaceInfoQueryRequest);
 
     /**
      * 发布接口

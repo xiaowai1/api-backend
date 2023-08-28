@@ -135,25 +135,28 @@ public class InterfaceInfoServiceImpl extends ServiceImpl<InterfaceInfoMapper, I
      * @return
      */
     @Override
-    public BaseResponse<List<InterfaceInfo>> listInterfaceInfoByPage(Page<InterfaceInfo> interfaceInfoPage, InterfaceInfoQueryRequest interfaceInfoQueryRequest) {
+    public BaseResponse<Page<InterfaceInfo>> listInterfaceInfoByPage(InterfaceInfoQueryRequest interfaceInfoQueryRequest) {
         InterfaceInfo interfaceInfoQuery = new InterfaceInfo();
         BeanUtil.copyProperties(interfaceInfoQueryRequest, interfaceInfoQuery);
+        long current = interfaceInfoQueryRequest.getCurrent();
+        long pageSize = interfaceInfoQueryRequest.getPageSize();
         String sortField = interfaceInfoQueryRequest.getSortField();
         String sortOrder = interfaceInfoQueryRequest.getSortOrder();
         String description = interfaceInfoQuery.getDescription();
         // description 需支持模糊搜索
         interfaceInfoQuery.setDescription(null);
         // 限制爬虫
-        if (interfaceInfoPage.getSize() > 50) {
+        if (pageSize > 50) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
         QueryWrapper<InterfaceInfo> queryWrapper = new QueryWrapper<>(interfaceInfoQuery);
         queryWrapper.like(StringUtils.isNotBlank(description), "description", description);
         queryWrapper.orderBy(StringUtils.isNotBlank(sortField),
                 sortOrder.equals(CommonConstant.SORT_ORDER_ASC), sortField);
-        IPage<InterfaceInfo> pageModel = baseMapper.selectPage(interfaceInfoPage, queryWrapper);
-        List<InterfaceInfo> interfaceInfoList = pageModel.getRecords();
-        return ResultUtils.success(interfaceInfoList);
+        Page<InterfaceInfo> interfacePage = this.page(new Page<>(current, pageSize), queryWrapper);
+//        IPage<InterfaceInfo> pageModel = baseMapper.selectPage(interfaceInfoPage, queryWrapper);
+//        List<InterfaceInfo> interfaceInfoList = pageModel.getRecords();
+        return ResultUtils.success(interfacePage);
     }
 
     /**

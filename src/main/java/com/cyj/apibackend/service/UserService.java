@@ -5,8 +5,10 @@ import com.cyj.apibackend.model.dto.user.UserLoginRequest;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.cyj.apicommon.model.entity.User;
 import com.cyj.apicommon.model.vo.LoginUserVO;
+import com.cyj.apicommon.model.vo.UserVO;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 /**
  *
@@ -18,7 +20,7 @@ public interface UserService extends IService<User> {
      * @param userAccount
      * @param userPassword
      * @param request
-     * @return
+     * @return 脱敏后的用户信息
      */
     BaseResponse<LoginUserVO> userLogin(String userAccount, String userPassword, HttpServletRequest request);
 
@@ -41,21 +43,21 @@ public interface UserService extends IService<User> {
      * @param userAccount
      * @param userPassword
      * @param checkPassword
-     * @return
+     * @return 新用户ID
      */
     BaseResponse<Long> register(String userAccount, String userPassword, String checkPassword);
 
     /**
      * 手机号登陆
      * @param userLoginRequest
-     * @return
+     * @return 脱敏后的用户信息
      */
     BaseResponse<LoginUserVO> userPhoneLogin(UserLoginRequest userLoginRequest);
 
     /**
      * 获取当前登录用户
      * @param request
-     * @return
+     * @return 用户信息
      */
     User getLoginUser(HttpServletRequest request);
 
@@ -72,4 +74,21 @@ public interface UserService extends IService<User> {
      * @return
      */
     boolean isAdmin(HttpServletRequest request);
+
+    /**
+     * 获取脱敏的用户信息
+     *
+     * @param user
+     * @return
+     */
+    UserVO getUserVO(User user);
+
+    /**
+     * 获取脱敏的用户信息
+     *
+     * @param userList
+     * @return
+     */
+    List<UserVO> getUserVO(List<User> userList);
+
 }

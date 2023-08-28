@@ -1,13 +1,10 @@
 package com.cyj.apiinterface.controller;
 
 import com.cyj.apiclientsdk.model.User;
-import com.cyj.apiclientsdk.utils.SignUtil;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import javax.servlet.http.HttpServletRequest;
 
 /**
  * @ClassName NameController
@@ -21,7 +18,7 @@ import javax.servlet.http.HttpServletRequest;
 public class NameController {
 
     @PostMapping("/getUsername")
-    public String getUsernameByUser(@RequestBody User user, HttpServletRequest request){
+    public String getUsernameByUser(@RequestBody User user){
         return "用户名是" + user.getUsername();
     }
 }

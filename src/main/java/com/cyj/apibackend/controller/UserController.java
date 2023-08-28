@@ -1,13 +1,17 @@
 package com.cyj.apibackend.controller;
 
+import com.cyj.apibackend.annotation.AuthCheck;
 import com.cyj.apibackend.common.BaseResponse;
 import com.cyj.apibackend.common.ErrorCode;
 import com.cyj.apibackend.common.ResultUtils;
+import com.cyj.apibackend.constant.UserConstant;
+import com.cyj.apibackend.exception.ThrowUtils;
 import com.cyj.apibackend.model.dto.user.UserLoginRequest;
 import com.cyj.apibackend.model.dto.user.UserRegisterRequest;
 import com.cyj.apibackend.service.UserService;
 import com.cyj.apicommon.model.entity.User;
 import com.cyj.apicommon.model.vo.LoginUserVO;
+import com.cyj.apicommon.model.vo.UserVO;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.*;
@@ -107,4 +111,38 @@ public class UserController {
         User user = userService.getLoginUser(request);
         return ResultUtils.success(userService.getLoginUserVO(user));
     }
+
+    /**
+     * 根据 id 获取用户（仅管理员）
+     *
+     * @param id
+     * @param request
+     * @return
+     */
+    @GetMapping("/get")
+    @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
+    public BaseResponse<User> getUserById(long id, HttpServletRequest request) {
+        if (id <= 0) {
+            log.error("user get failed, params error");
+            ResultUtils.error(ErrorCode.PARAMS_ERROR);
+        }
+        User user = userService.getById(id);
+        ThrowUtils.throwIf(user == null, ErrorCode.NOT_FOUND_ERROR);
+        return ResultUtils.success(user);
+    }
+
+    /**
+     * 根据 id 获取包装类
+     *
+     * @param id
+     * @param request
+     * @return
+     */
+    @GetMapping("/get/vo")
+    public BaseResponse<UserVO> getUserVOById(long id, HttpServletRequest request) {
+        BaseResponse<User> response = getUserById(id, request);
+        User user = response.getData();
+        return ResultUtils.success(userService.getUserVO(user));
+    }
+
 }
